@@ -10,6 +10,10 @@ import ProposalsIcon from '/Dashboard/contract.svg'
 import PrevIcon from '/Dashboard/prev 1.svg'
 import NextIcon from '/Dashboard/next 1.svg'
 import { Link } from 'react-router-dom'
+import { useQuery } from 'react-query'
+import { useSelector } from 'react-redux'
+import axios from 'axios'
+import Loader from '../../pages/Loader'
 const Wrap = styled.div`
   padding: 2rem 4rem;
 `
@@ -243,6 +247,7 @@ const ProjectsPage = () => {
   const [lineStyles, setLineStyles] = useState({})
   const categoryRefs = {}
   const [currentPage, setCurrentPage] = useState(1) // assuming 1 as the starting page
+  const { currentUser } = useSelector((state) => state.user)
 
   // Handle side icon click
   const handleNextPage = () => {
@@ -268,6 +273,18 @@ const ProjectsPage = () => {
       })
     }
   }, [])
+
+  // getting projects from database
+  const { data, status } = useQuery('projects', async () => {
+    const res = await axios.get(
+      `http://localhost:8800/api/upload/project/client/${currentUser._id}`
+    )
+    return res.data
+  })
+
+  if (status === 'loading') {
+    return <Loader />
+  }
 
   const categories = [
     'Active Projects',
@@ -318,8 +335,8 @@ const ProjectsPage = () => {
             <ActiveLine $left={lineStyles.left} $width={lineStyles.width} />
           )}
           <ContentWrap>
-            {ProjectData.map((project) => (
-              <Content key={project.id}>
+            {data.map((project) => (
+              <Content key={project._id}>
                 <ContentCorner>
                   <Button src={EditIcon} bg='#EAF6EE' />
                   <Button src={DeleteIcon} bg='#FCEDED' />

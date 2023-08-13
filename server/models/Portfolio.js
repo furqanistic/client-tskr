@@ -1,9 +1,15 @@
 import mongoose from 'mongoose'
 
 const PortfolioSchema = new mongoose.Schema({
-  userId: {
+  _id: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    default: () => new mongoose.Types.ObjectId(),
+  },
+
+  client: {
+    // Linking the project to the user who posted it
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User', // This refers to the User model
     required: true,
   },
   title: {

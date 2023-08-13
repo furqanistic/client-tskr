@@ -11,6 +11,7 @@ import ProjectBudget from '../components/Dashboard/ProjectBudget'
 import Login from './Login'
 import SignUp from './SignUp'
 import { useSelector } from 'react-redux'
+import Loader from './Loader'
 
 const AnimatedRoutes = () => {
   const location = useLocation()
@@ -29,6 +30,7 @@ const AnimatedRoutes = () => {
             <Route path='messages' element={<MessagesPage />} />
             <Route path='finances' element={<FinancesPage />} />
             <Route path='edit' element={<EditProfile />} />
+            <Route path='loader' element={<Loader />} />
             <Route path='*' element={<Dashboard />} />
           </Route>
         </Routes>

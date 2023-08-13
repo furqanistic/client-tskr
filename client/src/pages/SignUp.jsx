@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Topbar from '../components/Registration/Topbar'
-import { styled } from 'styled-components'
+import { keyframes, styled } from 'styled-components'
 import UpIcon from '/Auth/Up.svg'
 import EyeIcon from '/Auth/eve.svg'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -183,10 +183,52 @@ const ErrMsg = styled.p`
   margin-top: 0.3rem;
   text-align: start;
 `
+
+const ShowLoadingBox = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+`
+
+const rotation = keyframes`
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+`
+
+// Define the styled component
+const Loader = styled.span`
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: inline-block;
+  border-top: 4px solid #a8edbf;
+  border-right: 4px solid transparent;
+  box-sizing: border-box;
+  animation: ${rotation} 1s linear infinite;
+
+  &::after {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border-left: 4px solid green;
+    border-bottom: 4px solid transparent;
+    animation: ${rotation} 0.5s linear infinite reverse;
+  }
+`
 const SignUp = () => {
   const [selected, setSelected] = useState(null)
   const [showFailure, setShowFailure] = useState(false)
-  const [response, setResponse] = useState()
+  const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
   // scroll animation
@@ -199,6 +241,7 @@ const SignUp = () => {
   // control signup
 
   const handleSignUp = async (e) => {
+    setLoading(true)
     e.preventDefault()
     try {
       await axios.post('http://localhost:8800/api/auth/signup', {
@@ -207,6 +250,7 @@ const SignUp = () => {
         email: values.email,
         password: values.password,
       })
+      setLoading(false)
       navigate('/')
     } catch (err) {
       setShowFailure(true)
@@ -278,6 +322,13 @@ const SignUp = () => {
                     />
                   </NameWrapCol>
                 </NamesWrap>
+                {errors.fname && touched.fname && (
+                  <ErrMsg>{errors.fname}</ErrMsg>
+                )}
+                {errors.lname && touched.lname && (
+                  <ErrMsg>{errors.lname}</ErrMsg>
+                )}
+
                 <InputName>Email Address</InputName>
                 <InputField
                   value={values.email}
@@ -288,7 +339,9 @@ const SignUp = () => {
                   type='email'
                   size='30'
                 />
-                {errors.name && touched.name && <ErrMsg>{errors.name}</ErrMsg>}
+                {errors.email && touched.email && (
+                  <ErrMsg>{errors.email}</ErrMsg>
+                )}
                 <InputName style={{ marginTop: '1rem' }}>Password</InputName>
                 <InputWrap>
                   <InputFieldPass
@@ -315,6 +368,11 @@ const SignUp = () => {
                   </Link>
                 </WrapTop>
               </form>
+              {loading && (
+                <ShowLoadingBox>
+                  <Loader />
+                </ShowLoadingBox>
+              )}
             </Wrap>
           </RegisterPage>
         </RegisterSection>
